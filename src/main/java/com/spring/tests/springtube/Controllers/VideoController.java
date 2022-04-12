@@ -1,16 +1,11 @@
 package com.spring.tests.springtube.Controllers;
 
-import com.spring.tests.springtube.Entities.VideoEntity;
-import com.spring.tests.springtube.Repositories.VideoRepository;
+
 import com.spring.tests.springtube.Services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/videos")
@@ -31,15 +26,15 @@ public class VideoController {
   }
 
     @GetMapping("/video")
-    public ResponseEntity getOne(@RequestParam Long id){
+    public ResponseEntity getOne(@RequestParam String name){
         try {
-            return ResponseEntity.ok(videoService.getOne(id));
+            return ResponseEntity.ok(videoService.getOne(name));
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Ошибка при загрузке");
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity getAll(){
         try {
             return ResponseEntity.ok(videoService.getAll());
@@ -47,16 +42,12 @@ public class VideoController {
             return ResponseEntity.badRequest().body("Ошибка при загрузке");
         }
     }
-    @GetMapping("/form")
-    public String form(){
-            return "uploadForm";
 
-    }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteVideo(@PathVariable Long id){
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteVideo(@RequestParam String name){
         try {
-            videoService.deleteVideo(id);
+            videoService.deleting(name);
             return ResponseEntity.ok("Видео удалено");
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Ошибка при удалении");

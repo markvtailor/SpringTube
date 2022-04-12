@@ -3,53 +3,57 @@ package com.spring.tests.springtube.Services;
 import com.spring.tests.springtube.Entities.VideoEntity;
 import com.spring.tests.springtube.Repositories.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
-import java.io.File;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
 import java.io.IOException;
-import java.util.Optional;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
+
 
 @Service
 public class VideoService {
-
     @Autowired
     private VideoRepository videoRepository;
 
-    @Value("${upload.path}")
-    private String uploadPath;
 
 
-    public VideoEntity uploading(String name, MultipartFile file) throws IOException {
+    public VideoEntity uploading(String name, MultipartFile file) throws IOException, URISyntaxException {
+
+
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket("bucket1")
+                .key(name).contentType("video/mp4")
+                .build();
+        s3.putObject(request,
+                RequestBody.fromInputStream(file.getInputStream(), file.getInputStream().available()));
         VideoEntity videoEntity = new VideoEntity();
+        videoEntity.setUniqueVideoId(String.valueOf(UUID.randomUUID()));
         videoEntity.setName(name);
-        if(!file.isEmpty()){
-            File uploadedVideos = new File(uploadPath);
-            if (!uploadedVideos.exists()){
-                uploadedVideos.mkdir();
-            }
-
-            String fileUniqId = UUID.randomUUID().toString();
-            String fileName = fileUniqId + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + fileName));
-            videoEntity.setUniqid(fileUniqId);
-        }
         return videoRepository.save(videoEntity);
     }
-
-    public VideoEntity getOne(Long id){
-         VideoEntity video = videoRepository.findById(id).get();
+    public void deleting(String name) throws URISyntaxException {
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucket1").key(name).build();
+        s3.deleteObject(deleteObjectRequest);
+        videoRepository.deleteByName(name);
+    }
+    public VideoEntity getOne(String name){
+         VideoEntity video = videoRepository.findByName(name);
          return video;
     }
 
-    public VideoEntity getAll(){
-        VideoEntity videos = videoRepository.findAll().iterator().next();
+    public Iterable<VideoEntity> getAll(){
+        Iterable<VideoEntity> videos = videoRepository.findAll();
         return videos;
     }
 
-    public void deleteVideo(Long id){
-        videoRepository.deleteById(id);
-    }
 }
