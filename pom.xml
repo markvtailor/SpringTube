@@ -124,6 +124,11 @@
 			<version>2.0.0-alpha7</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
+		
 
 
 	</dependencies>

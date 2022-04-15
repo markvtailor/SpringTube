@@ -21,7 +21,7 @@ public class VideoEntity {
     @Column(name = "description")
     private String description;
     @Column(name = "views")
-    private int views = 0;
+    private int views;
     @Column(name = "metadata")
     private String metadata;
 

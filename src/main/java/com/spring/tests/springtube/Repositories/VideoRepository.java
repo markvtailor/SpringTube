@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface VideoRepository extends CrudRepository<VideoEntity, Long> {
     @Transactional
-     Long deleteByName(String name);
+     Long deleteByUniqueVideoId(String uniqueVideoId);
     @Transactional
-    VideoEntity findByName(String name);
+    VideoEntity findByUniqueVideoId(String uniqueVideoId);
 }
