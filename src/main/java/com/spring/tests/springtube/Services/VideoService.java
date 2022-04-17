@@ -42,7 +42,7 @@ public class VideoService {
 
     public VideoEntity uploading(String name, String description, MultipartFile file) throws IOException, URISyntaxException {
 
-
+        System.out.println(name+"test is success");
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
