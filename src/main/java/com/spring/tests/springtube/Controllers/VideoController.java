@@ -28,7 +28,7 @@ public class VideoController {
          videoService.uploading(name,description,file);
          return ResponseEntity.ok("Видео загружено");
       }catch (Exception e){
-        return ResponseEntity.badRequest().body("Ошибка при загрузке");
+        return ResponseEntity.badRequest().body("Ошибка при загрузке" + e.getMessage());
      }
   }
 
