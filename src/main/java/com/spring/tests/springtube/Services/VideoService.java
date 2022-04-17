@@ -10,14 +10,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
+import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,6 +44,17 @@ public class VideoService {
 
 
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+        ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
+        ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
+        if(listBucketsResponse.buckets().isEmpty()){
+            S3Waiter s3Waiter = s3.waiter();
+            CreateBucketRequest bucketRequest = CreateBucketRequest.builder().bucket("bucket1").build();
+            s3.createBucket(bucketRequest);
+            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder().bucket("bucket1").build();
+            WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
+            waiterResponse.matched().response().ifPresent(System.out::println);
+            System.out.println("bucket1 is ready");
+        }
         final String videoUUID = String.valueOf(UUID.randomUUID());
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket("bucket1")
