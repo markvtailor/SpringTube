@@ -1,13 +1,19 @@
 package com.spring.tests.springtube.Services;
 
+import com.amazonaws.services.lambda.model.Environment;
 import com.spring.tests.springtube.Entities.VideoEntity;
 import com.spring.tests.springtube.Repositories.VideoRepository;
+
+import org.apache.http.client.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
@@ -24,6 +30,7 @@ import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.waiters.S3Waiter;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,15 +42,18 @@ import java.util.UUID;
 public class VideoService {
     @Autowired
     private VideoRepository videoRepository;
-
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String VIDEO_CONTENT = "video/";
+    
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create("123","xyz");            
 
     public VideoEntity uploading(String name, String description, MultipartFile file) throws IOException, URISyntaxException {
-
+        AwsCredentialsProvider provider = EnvironmentVariableCredentialsProvider.create();
+        System.out.println(provider.toString());
         System.out.println(name+"test is success");
-        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).credentialsProvider(provider).region(Region.EU_NORTH_1).build();
+        
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
         if(listBucketsResponse.buckets().isEmpty()){
