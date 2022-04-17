@@ -42,9 +42,28 @@ public class VideoService {
 
     public VideoEntity uploading(String name, String description, MultipartFile file) throws IOException, URISyntaxException {
 
-
+        System.out.println(name+"test is success");
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+        ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
+        ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
+        if(listBucketsResponse.buckets().isEmpty()){
+            S3Waiter s3Waiter = s3.waiter();
+            CreateBucketRequest bucketRequest = CreateBucketRequest.builder().bucket("bucket1").build();
+            s3.createBucket(bucketRequest);
+            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder().bucket("bucket1").build();
+            WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
+            waiterResponse.matched().response().ifPresent(System.out::println);
+            System.out.println("bucket1 is ready");
+        }
+        final String videoUUID = String.valueOf(UUID.randomUUID());
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket("bucket1")
+                .key(videoUUID).contentType("video/mp4")
+                .build();
+        s3.putObject(request,
+                RequestBody.fromInputStream(file.getInputStream(), file.getInputStream().available()));
         VideoEntity videoEntity = new VideoEntity();
-        //videoEntity.setUniqueVideoId(videoUUID);
+        videoEntity.setUniqueVideoId(videoUUID);
         videoEntity.setName(name);
         videoEntity.setDescription(description);
         videoEntity.setViews(0);
