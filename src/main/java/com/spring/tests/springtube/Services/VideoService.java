@@ -51,7 +51,7 @@ public class VideoService {
     AwsBasicCredentials awsCreds = AwsBasicCredentials.create("123","xyz");            
 
     public VideoEntity uploading(String name, String description, MultipartFile file) throws IOException, URISyntaxException {
-        final S3Client s3 = S3Client.builder().endpointOverride(new URI("host.docker.internal:4566")).credentialsProvider(EnvironmentVariableCredentialsProvider.create()).region(Region.EU_NORTH_1).build();
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).credentialsProvider(EnvironmentVariableCredentialsProvider.create()).region(Region.EU_NORTH_1).build();
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
         if(listBucketsResponse.buckets().isEmpty()){
@@ -80,7 +80,6 @@ public class VideoService {
 
     public void deleting(String UUID) throws URISyntaxException {
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
-
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucket1").key(UUID).build();
         s3.deleteObject(deleteObjectRequest);
         videoRepository.deleteByUniqueVideoId( UUID);
