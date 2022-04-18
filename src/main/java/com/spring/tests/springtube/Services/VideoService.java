@@ -80,6 +80,7 @@ public class VideoService {
 
     public void deleting(String UUID) throws URISyntaxException {
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
+
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucket1").key(UUID).build();
         s3.deleteObject(deleteObjectRequest);
         videoRepository.deleteByUniqueVideoId( UUID);
