@@ -1,5 +1,6 @@
-FROM maven:3.8.1-openjdk-17
+FROM node
 RUN git clone https://github.com/markvtailor/SpringTube.git && cd SpringTube && git checkout SpringTube-with-Front-Docker
-WORKDIR /SpringTube
-CMD ["mvn", "spring-boot:run"]
+WORKDIR /SpringTube/src/main/frontend
+RUN npm i
+CMD ["npm", "run", "start"]
 
