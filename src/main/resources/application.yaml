@@ -1,0 +1,19 @@
+server:
+  port: 8090
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+      url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/springdb}
+      username: postgres
+      password: password
+auth:
+  jwt:
+    auth: AUTH-TOKEN
+    refresh: REFRESH-TOKEN
+    secret: loksufjsafyugsja12nja
+    expiration-auth: 600000
+    expiration-refresh: 31536000
+    path: /
