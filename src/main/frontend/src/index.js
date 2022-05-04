@@ -10,16 +10,39 @@ import App from "./App";
 import VideosList from './pages/VideosList';
 import UploadingPage from './pages/UploadingPage';
 import WatchPage from './pages/WatchPage';
+import Register from './components/Register';
+import Login from './components/Login';
+import { AuthProvider } from './context/AuthProvider';
+import RequireAuth from './components/RequireAuth';
+import Unauthorized from './components/Unauthorized';
+import AdminBoard from './pages/AdminBoard';
+
+const ROLES = {
+  'User': "USER",
+  'Admin': "ROLE_ADMIN"
+}
+
 const rootElement = document.getElementById("root");
 render(
+  <AuthProvider>
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="videos" element={<VideosList />} />
-      <Route path="upload" element={<UploadingPage />} />
       <Route path="watch/:id" element={<WatchPage/>}/>
+      <Route path="registration" element={<Register/>}/>
+      <Route path="login" element={<Login/>}/>
+      <Route path="unauthorized" element={<Unauthorized/>}/>
+      
+      <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+        <Route path="upload" element={<UploadingPage />} />
+        <Route path="adminboard" element={<AdminBoard />} />
+      </Route>
+      
     </Routes>
-  </BrowserRouter>,
+  </BrowserRouter>
+  </AuthProvider>,
+
   rootElement
 );
 

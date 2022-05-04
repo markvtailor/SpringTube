@@ -18,7 +18,8 @@ function App() {
       >
         <Link to="/videos">Videos</Link> |{" "}
         <Link to="/upload">Upload</Link> |{" "}
-        <Link to="/watch/:id">Watch</Link>
+        <Link to="/registration">Registration</Link>|{" "}
+        <Link to="/login">Login</Link>
       </nav>
     </div>
   )}
