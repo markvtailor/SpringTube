@@ -1,15 +1,28 @@
 import { useState, useEffect } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useNavigate, useLocation } from "react-router-dom";
+import useRefreshToken from "../hooks/useRefreshToken";
+import Select from 'react-select';
+import UserProfile from "../pages/UserProfile";
 
 
 const Users = () => {
     const [users,setUsers] = useState();
+    const [currentUser, setCurrentUser] = useState();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
     const location = useLocation();
+    const refresh = useRefreshToken();
+    //const [options,setOptions] = useState([])
 
+    const getCurrentUser = () => {
+                            return currentUser ? users.find(user => user.value === currentUser) : ''
+                        }
 
+   const onChange = (newValue) => {
+       setCurrentUser(newValue.value)
+   }
+                            
     useEffect(() => {
         let isMounted = true
         const controller = new AbortController();
@@ -20,34 +33,42 @@ const Users = () => {
                     signal: controller.signal
                 })
                 console.log(response.data)
-                isMounted && setUsers(response.data)
-
-                
+                isMounted && setUsers(response.data)              
             } catch (error) {
                 console.error(error)
                 navigate('/login',{state: {from: location}, replace: true})
             }
         }
-
+        
         getUsers();
-
+      
+                    
         return () => {
             isMounted = false;
             controller.abort();
         }
 
     },[])
-    return(
 
+    const options = (users) => users.map(user => ({
+        label: user.username,
+        value: user.username
+      }));
+    
+    return(
+        
         <article>
-            <h2>Пользователи</h2>
+            <h2>Управление пользователями</h2>
             {users?.length
                 ? (
                     <ul>
-                        {users.map((user,i) =>  <li key={i}>{user?.username}</li>)}
+                        <Select onChange={onChange} value={getCurrentUser()} options={options(users)} />
                     </ul>
                 ) : <p>Список пользователей пуст</p>
             }
+            <UserProfile data = {currentUser}/>
+            <button onClick={()=>refresh()}>Токен</button>
+            <button onClick={()=>console.log(currentUser)}>Юзер</button>
         </article>
     )
 }

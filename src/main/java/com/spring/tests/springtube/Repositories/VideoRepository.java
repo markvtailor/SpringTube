@@ -11,4 +11,6 @@ public interface VideoRepository extends CrudRepository<VideoEntity, Long> {
      Long deleteByUniqueVideoId(String uniqueVideoId);
     @Transactional
     VideoEntity findByUniqueVideoId(String uniqueVideoId);
+    @Transactional
+    Iterable<VideoEntity> findAllByAuthor(String author);
 }

@@ -1,9 +1,5 @@
 server:
   port: 8080
-auth:
-  jwt:
-    auth: AUTH-TOKEN
-    refresh: REFRESH-TOKEN
 spring:
   jpa:
     hibernate:
@@ -18,4 +14,4 @@ spring:
       max-file-size: 1024MB
 aws:
   accessKeyId: 123
-  secretKey: xyz
+  secretAccessKey: xyz

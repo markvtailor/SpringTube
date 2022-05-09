@@ -90,8 +90,7 @@ const Login = () => {
                          <p>
                             Нет аккаунта?<br />
                             <span className="line">
-                                {/*put router link here*/}
-                                <a href="#">Регистрация</a>
+                                <a href="/registration">Регистрация</a>
                             </span>
                         </p>
         </section>            

@@ -1,5 +1,6 @@
 package com.spring.tests.springtube.Services;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
 import com.amazonaws.services.lambda.model.Environment;
 import com.spring.tests.springtube.Entities.VideoEntity;
@@ -14,30 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
-import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
-import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.waiters.S3Waiter;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.UUID;
 
 
@@ -45,33 +35,37 @@ import java.util.UUID;
 public class VideoService  {
 
     @Value("${localstack.path:http://localhost:4566}")
-    private String localstackPath; 
+    private String localstackPath;
 
     @Autowired
     private VideoRepository videoRepository;
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String VIDEO_CONTENT = "video/";
-    
-    AwsBasicCredentials awsCreds = AwsBasicCredentials.create("123","xyz");            
 
-    public VideoEntity uploading(String name, String description, MultipartFile file) throws IOException, URISyntaxException {
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create("123","xyz");
+    final StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(awsCreds);
+    public VideoEntity uploading(String author, String name, String description, MultipartFile file) throws IOException, URISyntaxException {
+        author = author.toLowerCase();
+        System.setProperty("aws.accessKeyId","123");
+        //AwsCredentialsProvider awsCredentialsProvider = new SystemPropertiesCredentialsProvider();
         System.out.println(localstackPath);
-        final S3Client s3 = S3Client.builder().endpointOverride(new URI(localstackPath)).credentialsProvider(EnvironmentVariableCredentialsProvider.create()).region(Region.EU_NORTH_1).build();
+        final S3Client s3 = S3Client.builder().endpointOverride(new URI(localstackPath)).credentialsProvider(credentialsProvider).region(Region.EU_NORTH_1).build();
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
-        if(listBucketsResponse.buckets().isEmpty()){
+        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder().bucket(author).build();
+        if (!checkBucketExistence(author,s3)){
             S3Waiter s3Waiter = s3.waiter();
-            CreateBucketRequest bucketRequest = CreateBucketRequest.builder().bucket("bucket1").build();
+            CreateBucketRequest bucketRequest = CreateBucketRequest.builder().bucket(author).build();
             s3.createBucket(bucketRequest);
-            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder().bucket("bucket1").build();
+            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder().bucket(author).build();
             WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
             waiterResponse.matched().response().ifPresent(System.out::println);
-            System.out.println("bucket1 is ready");
+            System.out.println("Bucket " + author + " is ready");
         }
         final String videoUUID = String.valueOf(UUID.randomUUID());
         PutObjectRequest request = PutObjectRequest.builder()
-                .bucket("bucket1")
+                .bucket(author)
                 .key(videoUUID).contentType("video/mp4")
                 .build();
         s3.putObject(request,
@@ -81,12 +75,15 @@ public class VideoService  {
         videoEntity.setName(name);
         videoEntity.setDescription(description);
         videoEntity.setViews(0);
+        videoEntity.setAuthor(author);
         return videoRepository.save(videoEntity);
     }
 
     public void deleting(String UUID) throws URISyntaxException {
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucket1").key(UUID).build();
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().
+                bucket(videoRepository.findByUniqueVideoId(UUID).getAuthor().toLowerCase()).
+                key(UUID).build();
         s3.deleteObject(deleteObjectRequest);
         videoRepository.deleteByUniqueVideoId( UUID);
     }
@@ -94,7 +91,8 @@ public class VideoService  {
     public ResponseEntity<byte[]> streaming(String UUID) throws URISyntaxException  {
         final S3Client s3 = S3Client.builder().endpointOverride(new URI("http://localhost:4566")).region(Region.EU_NORTH_1).build();
         try{
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket("bucket1").key(UUID).build();
+            String author = videoRepository.findByUniqueVideoId(UUID).getAuthor().toLowerCase();
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(author).key(UUID).build();
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(getObjectRequest);
             return ResponseEntity.status(HttpStatus.OK)
                     .header(CONTENT_TYPE, VIDEO_CONTENT + "mp4")
@@ -108,12 +106,31 @@ public class VideoService  {
     }
     public VideoEntity getOne(String UUID){
          VideoEntity video = videoRepository.findByUniqueVideoId(UUID);
+
          return video;
+    }
+
+    public Iterable<VideoEntity> getAllUserVideos(String author){
+        Iterable<VideoEntity> videos = videoRepository.findAllByAuthor(author);
+        return videos;
     }
 
     public Iterable<VideoEntity> getAll(){
         Iterable<VideoEntity> videos = videoRepository.findAll();
         return videos;
+    }
+
+    private boolean checkBucketExistence (String bucketName, S3Client s3Client){
+        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                .bucket(bucketName)
+                .build();
+
+        try {
+            s3Client.headBucket(headBucketRequest);
+            return true;
+        } catch (NoSuchBucketException e) {
+            return false;
+        }
     }
 
 }

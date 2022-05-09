@@ -21,11 +21,12 @@ public class VideoController {
 
 
   @PostMapping("/upload")
-  public ResponseEntity uploadVideo(@RequestParam String name,@RequestParam String description, @RequestParam("file") MultipartFile file){
+  public ResponseEntity uploadVideo(@RequestParam String name,@RequestParam String description, @RequestParam String username, @RequestParam("file") MultipartFile file){
     try {
+        System.out.println(username);
         System.out.println(name);
         System.out.println(description);
-         videoService.uploading(name,description,file);
+         videoService.uploading(username,name,description,file);
          return ResponseEntity.ok("Видео загружено");
       }catch (Exception e){
         return ResponseEntity.badRequest().body("Ошибка при загрузке" + e.getMessage());
@@ -41,6 +42,15 @@ public class VideoController {
         }
     }
 
+    @GetMapping("/{author}")
+    public ResponseEntity getAllUserVideos(@PathVariable String author){
+      try {
+          return ResponseEntity.ok(videoService.getAllUserVideos(author));
+      }catch (Exception e){
+          return ResponseEntity.badRequest().body("Ошибка при загрузке");
+      }
+    }
+
     @GetMapping("/all")
     public ResponseEntity getAll(){
         try {
@@ -51,8 +61,8 @@ public class VideoController {
     }
 
 
-    @DeleteMapping("/delete")
-    public ResponseEntity deleteVideo(@RequestParam String UUID){
+    @DeleteMapping("/delete/{UUID}")
+    public ResponseEntity deleteVideo(@PathVariable String UUID){
         try {
             videoService.deleting(UUID);
             return ResponseEntity.ok("Видео удалено");
@@ -64,8 +74,7 @@ public class VideoController {
     @GetMapping("/watch/{UUID}")
     public Mono<ResponseEntity<byte[]>> streamVideo(@PathVariable String UUID) throws URISyntaxException {
 
-        String videoId = UUID;
-        return Mono.just(videoService.streaming(videoId));
+        return Mono.just(videoService.streaming(UUID));
      }
 
 

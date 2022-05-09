@@ -20,7 +20,7 @@ const VideosList = () => {
         <h1>{videoEntity.name}</h1>
         <NavLink to={"/watch/"+videoEntity.uniqueVideoId}>
            <VideoImageThumbnail
-              videoUrl={"http://localhost:4566/bucket1/"+videoEntity.uniqueVideoId}
+              videoUrl={"http://localhost:4566/" + videoEntity.author + "/"+videoEntity.uniqueVideoId}
               thumbnailHandler={(thumbnail) => console.log(thumbnail)}
               width={800}
               height={600}

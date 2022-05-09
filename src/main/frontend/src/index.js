@@ -16,9 +16,11 @@ import { AuthProvider } from './context/AuthProvider';
 import RequireAuth from './components/RequireAuth';
 import Unauthorized from './components/Unauthorized';
 import AdminBoard from './pages/AdminBoard';
+import PersistLogin from './components/PersistLogin';
+import UserProfile from './pages/UserProfile';
 
 const ROLES = {
-  'User': "USER",
+  'User': "ROLE_USER",
   'Admin': "ROLE_ADMIN"
 }
 
@@ -34,10 +36,14 @@ render(
       <Route path="login" element={<Login/>}/>
       <Route path="unauthorized" element={<Unauthorized/>}/>
       
-      <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-        <Route path="upload" element={<UploadingPage />} />
-        <Route path="adminboard" element={<AdminBoard />} />
+      <Route element={<PersistLogin />}>
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.User]} />}>
+           <Route path="upload" element={<UploadingPage />} />
+           <Route path="adminboard" element={<AdminBoard />} />
+           <Route path="profile" element={<UserProfile />} />
+        </Route>
       </Route>
+     
       
     </Routes>
   </BrowserRouter>

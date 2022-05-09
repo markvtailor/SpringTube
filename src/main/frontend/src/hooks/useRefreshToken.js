@@ -12,7 +12,6 @@ const useRefreshToken = () => {
 
         console.log(context.auth.refreshToken)
         
-        console.log(context)
         const response = await axios.post("user/auth/refresh",JSON.stringify({refreshToken: context.auth.refreshToken}),
         {
             headers: {'Content-Type': 'application/JSON'},
@@ -23,7 +22,7 @@ const useRefreshToken = () => {
             console.log("Test" + JSON.stringify(prev))
             console.log(response.data.accessToken)
             
-            return {...prev,accessToken: response.data.accessToken}
+            return {...prev, roles: prev.roles, accessToken: response.data.accessToken}
         })
         return response.data.accessToken;
     }

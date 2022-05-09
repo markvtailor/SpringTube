@@ -14,6 +14,8 @@ public class VideoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
+    @Column (name = "author", nullable = false)
+    private String author;
     @Column(name = "name",unique = true)
     private String name;
     @Column(name = "uniqueVideoId", updatable = false, unique = true, nullable = false)
