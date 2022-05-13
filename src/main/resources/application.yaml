@@ -14,6 +14,6 @@ auth:
     auth: AUTH-TOKEN
     refresh: REFRESH-TOKEN
     secret: loksufjsafyugsja12nja
-    expiration-auth: 600000
-    expiration-refresh: 31536000
+    expiration-auth: 60000
+    expiration-refresh: 360000
     path: /

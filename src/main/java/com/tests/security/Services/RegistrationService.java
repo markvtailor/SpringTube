@@ -43,7 +43,7 @@ public class RegistrationService {
         Set<String> strRoles = registrationRequest.getRole();
         Set<RoleEntity> roles = new HashSet<>();
         if(strRoles == null){
-            RoleEntity userRole = roleRepository.findByName(UserRole.USER).orElseThrow(() -> new RuntimeException("Такой роли нет"));
+            RoleEntity userRole = roleRepository.findByName(UserRole.ROLE_USER).orElseThrow(() -> new RuntimeException("Такой роли нет"));
             roles.add(userRole);
         }else {
             strRoles.forEach( role -> {switch (role){
@@ -52,7 +52,7 @@ public class RegistrationService {
                     roles.add(adminRole);
                     break;
                 default:
-                    RoleEntity userRole = roleRepository.findByName(UserRole.USER)
+                    RoleEntity userRole = roleRepository.findByName(UserRole.ROLE_USER)
                             .orElseThrow(() -> new RuntimeException("Такой роли нет"));
                     roles.add(userRole);
             }

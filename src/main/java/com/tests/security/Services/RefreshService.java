@@ -66,5 +66,11 @@ public class RefreshService {
 
     }
 
+    public  ResponseEntity<?> deleteToken (RefreshTokenRequest refreshTokenRequest){
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+        System.out.println(findByToken(refreshToken).map(RefreshTokenEntity::getToken).get() + "deleted");
+        refreshTokenRepository.deleteByToken(findByToken(refreshToken).map(RefreshTokenEntity::getToken).get());
+        return ResponseEntity.ok("Токен стерт" + refreshToken);
+    }
 
 }

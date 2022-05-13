@@ -2,7 +2,9 @@ package com.tests.security.Entities;
 
 public enum UserRole {
     ROLE_ADMIN,
+    ADMIN,
     GUEST,
-    USER,
+    ROLE_USER,
+    USER
 
 }

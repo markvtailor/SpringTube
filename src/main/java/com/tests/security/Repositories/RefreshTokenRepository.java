@@ -9,4 +9,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
     @Override
     Optional<RefreshTokenEntity> findById(Long id);
     Optional<RefreshTokenEntity> findByToken(String token);
+    Long deleteByToken(String token);
 }
