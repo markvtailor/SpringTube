@@ -4,59 +4,58 @@ import VideoImageThumbnail from 'react-video-thumbnail-image';
 import { NavLink } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 import { useContext } from "react"; 
+import UserVideos from "../components/UserVideos";
+import { Link } from "react-router-dom";
+import Select from 'react-select';
+import LikedVideos from "../components/LikedVideos";
 
 const UserProfile = (props) => {
-    props.data? 
-      console.log("the current is " + props.data) 
-      : 
-      console.log("Никого нет")
-    //console.log("current is" + props.data)
-    const context = useContext(AuthContext);
-    const [videosList,setVideosList] = useState([]);
-    const fetchVideosList = () => {
-      props.data?
-      axios.get("http://localhost:8080/videos/"+props.data).then(res => {
-          console.log(res);
-          setVideosList(res.data);
-        })
-      :
-      axios.get("http://localhost:8080/videos/"+context.auth.user).then(res => {
-          console.log(res);
-          setVideosList(res.data);
-        })
 
-    };
+  const [listType, setListType] = useState();
+    
+  const options = [
+      {label: 'Ваши видео',
+       value: 'your'
+      },
+       {
+           label:'Понравившиеся видео',
+           value: 'liked'
+       }
+  ]
+    const getListType = () => {
+        return listType ? options.find(type => type.value === listType) : ''
+    }
 
-    useEffect(() => {
-      fetchVideosList();
-    },[]);
-    return videosList.map((videoEntity,index) => {
-        const deleteVideo = async () => {
-            
+    const onChange = (newValue) => {
+    setListType(newValue.value)
+    }
 
-            console.log("id"+videoEntity.uniqueVideoId)
-            
-            const response = await axios.delete("http://localhost:8080/videos/delete/" + videoEntity.uniqueVideoId)
-          
-            return response.data;
-        }
+    function RenderList(props){
+      const list = props.listType;
+      if (list == 'liked'){
+        return <LikedVideos data={context.auth.user} />
+      } else if (list == 'your'){
+        return <UserVideos data={context.auth.user} />
+      }
+      
+    }
+
+
+  const context = useContext(AuthContext);
       return (     
-        <div key={index}>
-        <h1>Профиль пользователя {videoEntity.author}</h1>
-        <h2>{videoEntity.name}</h2>
-        <NavLink to={"/watch/"+videoEntity.uniqueVideoId}>
-           <VideoImageThumbnail
-              videoUrl={"http://localhost:4566/" + videoEntity.author + "/"+videoEntity.uniqueVideoId}
-              thumbnailHandler={(thumbnail) => console.log(thumbnail)}
-              width={800}
-              height={600}
-              alt="my test video"
-              />
-        </NavLink>
-        <button onClick={()=>deleteVideo()}>Удалить</button>
-        <p>{videoEntity.uniqueVideoId}</p>
-      </div>)
-    })
-  };
+        <section>
+            <h1>Профиль пользователя {context.auth.user}</h1>
+            <ul>
+                 <Select onChange={onChange} value={getListType()} options={options} />
+            </ul>
+            <br/>
+            <RenderList listType={listType} />
+            <br/>
+            <div className="flexGrow">
+                <Link to="/">Главная</Link>
+            </div>
+        </section>
+   ) }
+  
 
   export default UserProfile;

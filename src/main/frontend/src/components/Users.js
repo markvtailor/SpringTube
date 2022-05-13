@@ -6,7 +6,10 @@ import Select from 'react-select';
 import UserProfile from "../pages/UserProfile";
 
 
+
 const Users = () => {
+
+    
     const [users,setUsers] = useState();
     const [currentUser, setCurrentUser] = useState();
     const axiosPrivate = useAxiosPrivate();
@@ -66,7 +69,7 @@ const Users = () => {
                     </ul>
                 ) : <p>Список пользователей пуст</p>
             }
-            <UserProfile data = {currentUser}/>
+            <UserProfile data={currentUser}/>
             <button onClick={()=>refresh()}>Токен</button>
             <button onClick={()=>console.log(currentUser)}>Юзер</button>
         </article>

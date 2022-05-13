@@ -4,8 +4,10 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
 import com.amazonaws.services.lambda.model.Environment;
 import com.spring.tests.springtube.Entities.VideoEntity;
+import com.spring.tests.springtube.Entities.ViewEntity;
 import com.spring.tests.springtube.Repositories.VideoRepository;
 
+import com.spring.tests.springtube.Repositories.ViewRepository;
 import org.apache.http.client.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +41,8 @@ public class VideoService  {
 
     @Autowired
     private VideoRepository videoRepository;
+    @Autowired
+    ViewRepository viewRepository;
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String VIDEO_CONTENT = "video/";
@@ -74,8 +78,12 @@ public class VideoService  {
         videoEntity.setUniqueVideoId(videoUUID);
         videoEntity.setName(name);
         videoEntity.setDescription(description);
-        videoEntity.setViews(0);
+        videoEntity.setLikes(0);
         videoEntity.setAuthor(author);
+        ViewEntity view = new ViewEntity();
+        view.setUniqueVideoId(videoUUID);
+        view.setViews(0);
+        viewRepository.save(view);
         return videoRepository.save(videoEntity);
     }
 
@@ -111,7 +119,7 @@ public class VideoService  {
     }
 
     public Iterable<VideoEntity> getAllUserVideos(String author){
-        Iterable<VideoEntity> videos = videoRepository.findAllByAuthor(author);
+        Iterable<VideoEntity> videos = videoRepository.findAllByAuthor(author.toLowerCase());
         return videos;
     }
 
