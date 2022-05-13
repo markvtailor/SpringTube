@@ -1,7 +1,5 @@
-import axios from "axios";
-import React, {useState, useEffect} from "react";
-import VideoImageThumbnail from 'react-video-thumbnail-image';
-import { NavLink } from "react-router-dom";
+
+import React, {useState} from "react";
 import AuthContext from "../context/AuthProvider";
 import { useContext } from "react"; 
 import UserVideos from "../components/UserVideos";
@@ -34,9 +32,9 @@ const UserProfile = (props) => {
 
     function RenderList(props){
       const list = props.listType;
-      if (list == 'liked'){
+      if (list === 'liked'){
         return <LikedVideos data={user} />
-      } else if (list == 'your'){
+      } else if (list === 'your'){
         return <UserVideos data={user} />
       }
       

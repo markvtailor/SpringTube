@@ -2,19 +2,13 @@ import axios from "axios";
 import { useState } from "react";
 import AuthContext from "../context/AuthProvider";
 import { useContext } from "react"; 
-
+const BASE_URL='http://localhost:8080'
 
 const UploadingPage = () => {
   const context = useContext(AuthContext);
   const [videoName, setName] = useState('');
   const [videoDescription, setDescription] = useState('');
   const [file, setFile] = useState();
-    //state for checking file size
-    const [fileSize, setFileSize] = useState(true);
-    // for file upload progress message
-    const [fileUploadProgress, setFileUploadProgress] = useState(false);
-    //for displaying response message
-    const [fileUploadResponse, setFileUploadResponse] = useState(null);
     
     const uploadFileHandler = (event) => {
       setFile(event.target.files[0]);
@@ -23,9 +17,6 @@ const UploadingPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setFileSize(true);
-    setFileUploadProgress(true);
-    setFileUploadResponse(null);
     const config = {
       headers: {
           'content-type': 'multipart/form-data'
@@ -36,7 +27,7 @@ const UploadingPage = () => {
     formData.append('description',videoDescription)
     formData.append('name',videoName)
     formData.append('username',context.auth.user)
-    axios.post("http://localhost:8080/videos/upload",formData,config)
+    axios.post(BASE_URL+"/videos/upload",formData,config)
   }
 
   return (

@@ -1,13 +1,12 @@
 
 
 import axios from "axios"
-
+const BASE_URL='http://localhost:8080'
 
 const DislikeVideo = (props) =>{
 
     const dislike = async () =>{
-        console.log(props.user)
-        const response = await axios.put("http://localhost:8080/videos/video/like/",JSON.stringify({user: props.user,videoId: props.videoId,value: "-1"}),
+        const response = await axios.put(BASE_URL+"/videos/video/like/",JSON.stringify({user: props.user,videoId: props.videoId,value: "-1"}),
         {
             headers: {'Content-Type': 'application/JSON'},
         });

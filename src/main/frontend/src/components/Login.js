@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect} from "react";
 import useAuth from "../hooks/useAuth";
 import axios from "../api/axios";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import {useNavigate, useLocation } from 'react-router-dom';
 
 const LOGIN_URL = 'user/auth/login';
 
@@ -36,9 +36,7 @@ const Login = () => {
                 JSON.stringify({username: user, password: pwd}),
                 {
                     headers: {'Content-Type': 'application/JSON'},
-                    //withCredentials: true
                 });
-            console.log(JSON.stringify(response?.data));
             const accessToken = response?.data?.accessToken;
             const refreshToken = response?.data?.refreshToken;
             const roles = response?.data?.roles;

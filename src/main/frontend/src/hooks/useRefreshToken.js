@@ -10,12 +10,10 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
 
-        console.log(context.auth.refreshToken)
         
         const response = await axios.post("user/auth/refresh",JSON.stringify({refreshToken: context.auth.refreshToken}),
         {
             headers: {'Content-Type': 'application/JSON'},
-            //withCredentials: true
         });
         setAuth(prev => {
 

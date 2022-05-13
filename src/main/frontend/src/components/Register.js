@@ -60,11 +60,9 @@ const Register = () => {
                 JSON.stringify({username: user, email: email, password: pwd}),
                 {
                     headers: {'Content-Type': 'application/JSON'},
-                    //withCredentials: true
                 });
                 console.log(response.data)
                 setSuccess(true)
-            console.log(user,pwd)
             setSuccess(true)
         } catch (error) {
             if(!error?.response){
@@ -119,13 +117,10 @@ const Register = () => {
                         <input
                             type="text"
                             id="email"
-                            //ref={userRef}
                             autoComplete="off"
                             onChange={(e) => setEmail(e.target.value)}
                             value={email}
                             required
-                            //aria-invalid={validName ? "false" : "true"}
-                            //aria-describedby="uidnote"
                             onFocus={() => setEmailFocus(true)}
                             onBlur={() => setEmailFocus(false)}
                         />

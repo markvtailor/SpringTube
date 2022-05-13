@@ -9,14 +9,12 @@ import UserProfile from "../pages/UserProfile";
 
 const Users = () => {
 
-    
     const [users,setUsers] = useState();
     const [currentUser, setCurrentUser] = useState();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
     const location = useLocation();
     const refresh = useRefreshToken();
-    //const [options,setOptions] = useState([])
 
     const getCurrentUser = () => {
                             return currentUser ? users.find(user => user.value === currentUser) : ''
@@ -35,7 +33,6 @@ const Users = () => {
                 const response = await axiosPrivate.get('user/auth/users',{
                     signal: controller.signal
                 })
-                console.log(response.data)
                 isMounted && setUsers(response.data)              
             } catch (error) {
                 console.error(error)
@@ -70,8 +67,6 @@ const Users = () => {
                 ) : <p>Список пользователей пуст</p>
             }
             <UserProfile user={currentUser}/>
-            <button onClick={()=>refresh()}>Токен</button>
-            <button onClick={()=>console.log(currentUser)}>Юзер</button>
         </article>
     )
 }

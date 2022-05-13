@@ -1,15 +1,13 @@
 import { useState,useEffect } from "react"
 import axios from "axios";
-
+const BASE_URL='http://localhost:8080'
 
 
 const Comments = (props) =>{
 
     const [comments,setComments] = useState([]);
     const fetchComments = () => {
-        console.log("the props" + props.id)
-      axios.get("http://localhost:8080/videos/video/comments/" + props.id).then(res => {
-        console.log(res);
+      axios.get(BASE_URL+"/videos/video/comments/" + props.id).then(res => {
         setComments(res.data);
       })
     };

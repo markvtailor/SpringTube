@@ -2,16 +2,13 @@ import axios from "axios";
 import React, {useState, useEffect} from "react";
 import VideoImageThumbnail from 'react-video-thumbnail-image';
 import { NavLink } from "react-router-dom";
-import AuthContext from "../context/AuthProvider";
-import { useContext } from "react"; 
-
+const BASE_URL='http://localhost:8080'
 
 const UserVideos = (props) => {
    
     const [videosList,setVideosList] = useState([]);
     const fetchVideosList = () => {
-      axios.get("http://localhost:8080/videos/"+props.data).then(res => {
-          console.log(res);
+      axios.get(BASE_URL+"/videos/"+props.data).then(res => {
           setVideosList(res.data);
          
         })
@@ -24,10 +21,7 @@ const UserVideos = (props) => {
       return videosList.map((videoEntity,index) => {
         const deleteVideo = async () => {
             
-
-            console.log("id"+videoEntity.uniqueVideoId)
-            
-            const response = await axios.delete("http://localhost:8080/videos/delete/" + videoEntity.uniqueVideoId)
+            const response = await axios.delete(BASE_URL+"/videos/delete/" + videoEntity.uniqueVideoId)
           
             return response.data;
         }

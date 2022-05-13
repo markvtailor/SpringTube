@@ -10,7 +10,6 @@ const useLogout = () => {
 
     const logout = async () => {
         setAuth({})
-        console.log(context)
         try {
             const response = await axios.post("user/auth/logout",JSON.stringify({refreshToken: context.auth.refreshToken}),
         {

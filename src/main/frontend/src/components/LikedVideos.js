@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import VideoImageThumbnail from 'react-video-thumbnail-image';
 import { NavLink } from "react-router-dom";
-
+const BASE_URL='http://localhost:8080'
 
 
 const LikedVideos = (props) => {
     const [videosList,setVideosList] = useState([]);
     const fetchVideosList = () => {
-      axios.get("http://localhost:8080/videos/liked/"+props.data).then(res => {
-          console.log(res);
+      axios.get(BASE_URL+"/videos/liked/"+props.data).then(res => {
           setVideosList(res.data);
         })
     }

@@ -11,7 +11,6 @@ import com.spring.tests.springtube.Repositories.ViewRepository;
 import org.apache.http.client.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
 import java.util.UUID;
 
 
@@ -52,8 +50,6 @@ public class VideoService  {
     public VideoEntity uploading(String author, String name, String description, MultipartFile file) throws IOException, URISyntaxException {
         author = author.toLowerCase();
         System.setProperty("aws.accessKeyId","123");
-        //AwsCredentialsProvider awsCredentialsProvider = new SystemPropertiesCredentialsProvider();
-        System.out.println(localstackPath);
         final S3Client s3 = S3Client.builder().endpointOverride(new URI(localstackPath)).credentialsProvider(credentialsProvider).region(Region.EU_NORTH_1).build();
         ListBucketsRequest listBucketsRequest = ListBucketsRequest.builder().build();
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);

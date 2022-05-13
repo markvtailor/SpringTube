@@ -12,7 +12,6 @@ import com.spring.tests.springtube.Repositories.ViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,7 +55,6 @@ public class ViewService {
     }
 
     public void likeVideo(String videoId,String user){
-        System.out.println(videoId);
         VideoEntity video = videoRepository.findByUniqueVideoId(videoId);
         if(likedRepository.findByUniqueVideoIdAndUsername(videoId,user) != null && likedRepository.findByUniqueVideoIdAndUsername(videoId,user).getValue() == 1){
            video.setLikes(video.getLikes()-1);

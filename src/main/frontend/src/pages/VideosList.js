@@ -3,11 +3,11 @@ import axios from "axios";
 import React, {useState, useEffect} from "react";
 import VideoImageThumbnail from 'react-video-thumbnail-image';
 import { NavLink } from "react-router-dom";
-
+const BASE_URL='http://localhost:8080'
 const VideosList = () => {
     const [videosList,setVideosList] = useState([]);
     const fetchVideosList = () => {
-      axios.get("http://localhost:8080/videos/all").then(res => {
+      axios.get(BASE_URL+"/videos/all").then(res => {
         console.log(res);
         setVideosList(res.data);
       })
