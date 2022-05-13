@@ -69,7 +69,7 @@ const Users = () => {
                     </ul>
                 ) : <p>Список пользователей пуст</p>
             }
-            <UserProfile data={currentUser}/>
+            <UserProfile user={currentUser}/>
             <button onClick={()=>refresh()}>Токен</button>
             <button onClick={()=>console.log(currentUser)}>Юзер</button>
         </article>

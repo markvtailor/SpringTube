@@ -10,6 +10,8 @@ import Select from 'react-select';
 import LikedVideos from "../components/LikedVideos";
 
 const UserProfile = (props) => {
+  const context = useContext(AuthContext);
+  const user = props.user? props.user : context.auth.user
 
   const [listType, setListType] = useState();
     
@@ -33,18 +35,18 @@ const UserProfile = (props) => {
     function RenderList(props){
       const list = props.listType;
       if (list == 'liked'){
-        return <LikedVideos data={context.auth.user} />
+        return <LikedVideos data={user} />
       } else if (list == 'your'){
-        return <UserVideos data={context.auth.user} />
+        return <UserVideos data={user} />
       }
       
     }
 
 
-  const context = useContext(AuthContext);
+
       return (     
         <section>
-            <h1>Профиль пользователя {context.auth.user}</h1>
+            <h1>Профиль пользователя {user}</h1>
             <ul>
                  <Select onChange={onChange} value={getListType()} options={options} />
             </ul>
