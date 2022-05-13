@@ -29,6 +29,7 @@ public class RegistrationService {
     PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> register(RegistrationRequest registrationRequest){
+
         if(userRepository.findByEmail(registrationRequest.getEmail()).isPresent()){
             return ResponseEntity.badRequest().body(new MessageResponse("Email занят"));
         }

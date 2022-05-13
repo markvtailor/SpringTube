@@ -84,37 +84,6 @@ public class AuthController {
             return  buildErrorResponse(e.getLocalizedMessage());
         }
     }
-  /*  @GetMapping("/current")
-    public ResponseEntity<?> current(){
-        try{
-            UserEntity user = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return buildUserResponse(user);
-        }catch (NullPointerException e){
-            log.error(e.getLocalizedMessage());
-        }
-        return buildUserResponse(new UserEntity());
-    }
-
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse httpServletResponse){
-        clearTokens(httpServletResponse);
-        SecurityContextHolder.clearContext();
-        return buildUserResponse(new UserEntity());
-    }
-
-
-
-private void clearTokens(HttpServletResponse httpServletResponse) {
-    Cookie authCookie = new Cookie(jwtTokenProvider.getAuthCookieName(), "-");
-    authCookie.setPath(jwtTokenProvider.getCookiePath());
-    Cookie refreshCookie = new Cookie(jwtTokenProvider.getRefreshCookieName(), "-");
-    refreshCookie.setPath(jwtTokenProvider.getCookiePath());
-    httpServletResponse.addCookie(authCookie);
-    httpServletResponse.addCookie(refreshCookie);
-}
-private ResponseEntity<?> buildUserResponse(UserEntity user){
-    return ResponseEntity.ok(new UserResponse(user));
-}*/
 
     private ResponseEntity<?> buildErrorResponse(String message){
     return ResponseEntity.ok(new MessageResponse(message));
